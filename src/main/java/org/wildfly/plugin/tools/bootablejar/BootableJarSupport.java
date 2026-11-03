@@ -181,18 +181,6 @@ public class BootableJarSupport {
 
     /** Builds the format-agnostic boot component model. */
     private static CdxComponent buildBootComponent(ScannedArtifacts boot, String purl) {
-        final CdxComponent.Method method = new CdxComponent.Method();
-        method.setTechnique("manifest-analysis");
-        method.setValue("maven-pom-analysis");
-
-        final CdxComponent.Identity identity = new CdxComponent.Identity();
-        identity.setField("purl");
-        identity.setConfidence("1.0");
-        identity.setMethods(List.of(method));
-
-        final CdxComponent.Evidence evidence = new CdxComponent.Evidence();
-        evidence.setIdentity(List.of(identity));
-
         final CdxComponent bootComponent = new CdxComponent();
         bootComponent.setType("library");
         bootComponent.setBomRef(purl);
@@ -200,7 +188,6 @@ public class BootableJarSupport {
         bootComponent.setName(boot.getBoot().getArtifactId());
         bootComponent.setVersion(boot.getBoot().getVersion());
         bootComponent.setPurl(purl);
-        bootComponent.setEvidence(evidence);
         return bootComponent;
     }
 
@@ -265,25 +252,6 @@ public class BootableJarSupport {
         component.appendChild(createTextElement(doc, ns, "name", c.getName()));
         component.appendChild(createTextElement(doc, ns, "version", c.getVersion()));
         component.appendChild(createTextElement(doc, ns, "purl", c.getPurl()));
-
-        final CdxComponent.Identity identity = c.getEvidence().getIdentity().get(0);
-        final CdxComponent.Method method = identity.getMethods().get(0);
-
-        final Element methodEl = createElement(doc, ns, "method");
-        methodEl.appendChild(createTextElement(doc, ns, "technique", method.getTechnique()));
-        methodEl.appendChild(createTextElement(doc, ns, "value", method.getValue()));
-
-        final Element methodsEl = createElement(doc, ns, "methods");
-        methodsEl.appendChild(methodEl);
-
-        final Element identityEl = createElement(doc, ns, "identity");
-        identityEl.appendChild(createTextElement(doc, ns, "field", identity.getField()));
-        identityEl.appendChild(createTextElement(doc, ns, "confidence", identity.getConfidence()));
-        identityEl.appendChild(methodsEl);
-
-        final Element evidenceEl = createElement(doc, ns, "evidence");
-        evidenceEl.appendChild(identityEl);
-        component.appendChild(evidenceEl);
         return component;
     }
 

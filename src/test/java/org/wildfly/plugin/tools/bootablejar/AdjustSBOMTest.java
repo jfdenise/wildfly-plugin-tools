@@ -22,6 +22,7 @@ import org.w3c.dom.NodeList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for {@link BootableJarSupport#adjustSBOM}.
@@ -132,12 +133,9 @@ class AdjustSBOMTest {
         assertEquals(EXPECTED_PURL, boot.get("purl").asText());
         assertEquals(EXPECTED_PURL, boot.get("bom-ref").asText());
 
-        // boot component has evidence/identity with method
+        // boot component has no evidence=
         final JsonNode bootEvidence = boot.get("evidence");
-        assertNotNull(bootEvidence);
-        final JsonNode bootIdentity = bootEvidence.get("identity").get(0);
-        assertEquals("purl", bootIdentity.get("field").asText());
-        assertEquals("manifest-analysis", bootIdentity.get("methods").get(0).get("technique").asText());
+        assertNull(bootEvidence);
     }
 
     @Test
@@ -183,13 +181,6 @@ class AdjustSBOMTest {
 
         // boot component has evidence/identity/methods
         final NodeList bootEvidence = boot.getElementsByTagNameNS(ns, "evidence");
-        assertEquals(1, bootEvidence.getLength());
-        final Element bootIdentityEl = (Element) ((Element) bootEvidence.item(0))
-                .getElementsByTagNameNS(ns, "identity").item(0);
-        assertNotNull(bootIdentityEl);
-        assertEquals("purl", bootIdentityEl.getElementsByTagNameNS(ns, "field").item(0).getTextContent());
-        assertEquals("manifest-analysis",
-                ((Element) bootIdentityEl.getElementsByTagNameNS(ns, "method").item(0))
-                        .getElementsByTagNameNS(ns, "technique").item(0).getTextContent());
+        assertEquals(0, bootEvidence.getLength());
     }
 }
